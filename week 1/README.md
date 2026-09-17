@@ -130,3 +130,15 @@ twice, and how to avoid checking a ball against itself.
 
 Submission details will be announced separately, so don't worry about that part
 for now.
+
+## Answers:
+Q1. A fast enough ball can end up outside the arena without the wall bounce ever
+being detected. Why does the detection fail, and which of Δt, |v|, ρ, R and g decide whether
+it happens?
+A1. The detection fails because of how frames are calculated in the simulation, i.e. it is due to Δt. Due to the speed of the ball, in one frame it is not in contact with the surface, while in the next frame it is completely outside it in the next frame. As our condition only checks if ball is partially within the surface at any frame, it will fail. (However, I dont think my code will fail as it just checks if the distance is greater than the bowl radius, so it will offset accordingly)
+
+Q2. Set ew = 1, so that no energy is lost at a bounce, and let the ball run for a
+few thousand steps. Does the peak height stay put, creep upward, or decay? Gravity and the
+bounce rule are the only things acting, so if it changes at all, where is that energy coming
+from?
+A2. The height will creep upward. Even though energy should be conserved, since the program checks the simulation in discrete, though tiny, steps, the ball acquires extra speed due to gravity when it penatrates the surface. This will add up over a 1000 steps.
