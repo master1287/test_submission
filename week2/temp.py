@@ -131,7 +131,7 @@ class SandSim:
         """
         columns = _rng.permutation(self.width)
         for y in range(self.height-1,-1,-1):
-            for x in columns:
+            for x in range(1,self.width,1):
                 if(self._types[y,x] == 1):
                     if(y+1<self.height):
                         if(self._types[y+1,x] == 0):
@@ -142,13 +142,13 @@ class SandSim:
                             self._types[y,x] = 2
                         elif(self._types[y+1,x]==1):
                             directions = [-1,1]
-                            _rng.shuffle(directions)
                             for direction in directions:
                                 diagonal = x + direction
                                 if(0<= diagonal < self.width and self._types[y+1,diagonal] == 0):
                                     if(y+1<self.height):
                                         self._types[y+1,diagonal] = 1
                                         self._types[y,x] = 0
+                                        break   
                         else:
                             self._types[y,x] = 1
                 elif(self._types[y,x]==2):
