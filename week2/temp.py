@@ -130,16 +130,20 @@ class SandSim:
         copy, and write the result into the live grid (or vice versa).
         """
         columns = _rng.permutation(self.width)
-        for y in range(self.height-1,-1,-1):
-            for x in range(1,self.width,1):
+        for y in range(self.height-1,-1,-1): #goes from bottom to top
+            for x in columns: #randomly goes through the columns
+                #for sand
                 if(self._types[y,x] == 1):
                     if(y+1<self.height):
+                        #makes the sand fall
                         if(self._types[y+1,x] == 0):
-                            self._types[y+1,x] = 1
+                            self._types[y+1,x] = 1 
                             self._types[y,x] = 0
+                        #makes the sand fall slowly in water
                         elif(self._types[y+1,x] == 2 and _rng.random() < 0.5):
                             self._types[y+1,x] = 1
                             self._types[y,x] = 2
+                        #makes the sand fall diagonally if bottomc cell is occupied
                         elif(self._types[y+1,x]==1):
                             directions = [-1,1]
                             for direction in directions:
@@ -151,14 +155,17 @@ class SandSim:
                                         break   
                         else:
                             self._types[y,x] = 1
+                    #for water
                 elif(self._types[y,x]==2):
                     moved = False
                     if(y+1<self.height):
+                        #makes water fall down
                         if(self._types[y+1,x] == 0):
                             moved = True
                             self._types[y+1,x] = 2
                             self._types[y,x] = 0
-                        elif(self._types[y+1,x]==1 or self._types[y+1,x]==2):
+                        #makes water fall diagonally if bottom square occupied
+                        elif(self._types[y+1,x]==1 or self._types[y+1,x]==2 or self._types[y+1,x]==3):
                             directions = [-1,1]
                             _rng.shuffle(directions)
                             for direction in directions:
@@ -169,6 +176,7 @@ class SandSim:
                                         self._types[y+1,diagonal] = 2
                                         self._types[y,x] = 0
                                         break
+                        #if both fail, then it makes the water move horizontally
                         if moved == False:
                             directions = _rng.permutation([-1, 1])
                             for direction in directions:
@@ -178,31 +186,38 @@ class SandSim:
                                         self._types[y,neighbour] = 2
                                         self._types[y,x] = 0
                                         break
+                #paints wall
                 elif(self._types[y,x] == 3):
                     continue
+                #paints fire
                 elif(self._types[y,x] == 4):
+                    directions = _rng.permutation([-1, 1])
+                    #decides whether fire will disappear or remain
                     if _rng.random() < 0.1:
                         self._types[y, x] = 0
-                        directions = _rng.permutation([-1, 1])
                     for dx in directions:
                         neighbour_x = x + dx
                     for dy in directions:
                         neighbour_y = y + dy
+                    #checks whether neighbouring block is water, and turns it into smoke
                     if((self._types[y,neighbour_x] or self._types[neighbour_y,x]) == 2):
                         self._types[y,x] = 5
+                #paints smoke
                 elif(self._types[y,x] == 5):
                     if _rng.random() < 0.5 and y>0:
                         directions = _rng.permutation([-1, 1])
                         for direction in directions:
                             neighbour = x + direction
-                            if(self._types[y-1,neighbour] in (0,2) and 0<neighbour<self.width):
+                            #moves smoke upwards when upward block is nothing
+                            if(self._types[y-1,neighbour]==0 and 0<neighbour<self.width):
                                 self._types[y-1,neighbour] = 5
                                 self._types[y,x] = 0
                                 break
+                            if(self._types[y-1,neighbour]==2 and 0<neighbour<self.width):
+                                self._types[y-1,neighbour] = 5
+                                self._types[y,x] = 2
+                                break
 
-
-
-        #raise NotImplementedError("implement the physics, then delete this line")
 
     # ------------------------------------------------------------------ #
     # Rendering (boilerplate — nothing to do here)
